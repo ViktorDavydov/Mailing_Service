@@ -1,0 +1,19 @@
+{% load static %}
+<div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+    <a class="navbar-brand" href="/">
+      <img src="{% static 'brand/mailer_logo.svg' %}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+      Сервис рассылок
+    </a>
+    <nav class="mt-2 mt-md-0 ms-md-auto">
+        <a class="btn btn-light"
+           href="{% url 'mailer:home' %}">Главная</a>
+        <a class="btn btn-light"
+           href="{% url 'mailer:mailers_list' %}">Список рассылок</a>
+        <a class="btn btn-warning"
+           href="{% url 'mailer:create_mailer' %}">Создать</a>
+    </nav>
+</div>
+<div class="header mx-auto text-center">
+    <h1 class="display-5 fw-normal text-body-emphasis">Сервис рассылок</h1>
+    <p class="fs-5 text-body-secondary">Создание и управление рассылками</p>
+</div>
