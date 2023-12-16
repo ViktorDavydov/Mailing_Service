@@ -1,17 +1,30 @@
 from django.db import models
 
 NULLABLE = {'null': True, 'blank': True}
+send_period_CHOICES = (
+    ('Ежедневно', 'Ежедневно'),
+    ('Еженедельно', 'Еженедельно'),
+    ('Ежемесячно', 'Ежемесячно')
+)
+
+send_status_CHOICES = (
+    ('Создана', 'Создана'),
+    ('Запущена', 'Запущена'),
+    ('Завершена', 'Завершена')
+)
 
 
 class SendOptions(models.Model):
     send_name = models.CharField(max_length=200, verbose_name='наименование рассылки', **NULLABLE)
     send_time = models.TimeField(auto_now=False, auto_now_add=False,
                                  verbose_name='время рассылки')
-    send_period = models.CharField(max_length=20, verbose_name='периодичность')
+    send_period = models.CharField(max_length=20, verbose_name='периодичность',
+                                   choices=send_period_CHOICES, default='')
     mail_title = models.CharField(max_length=100, verbose_name='тема',
                                   default='Сообщение от Invest Store!')
     mail_text = models.TextField(verbose_name='сообщение', default='Добрый день!')
-    send_status = models.CharField(max_length=20, verbose_name='статус рассылки')
+    send_status = models.CharField(max_length=20, verbose_name='статус рассылки',
+                                   choices=send_status_CHOICES, default='')
     client_email = models.ForeignKey('Client', on_delete=models.CASCADE,
                                      verbose_name="контактный email", null=True)
 

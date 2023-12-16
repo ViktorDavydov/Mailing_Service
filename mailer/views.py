@@ -33,7 +33,12 @@ class SendOptionsCreateView(CreateView):
             )
 
         scheduler = BackgroundScheduler()
-        scheduler.add_job(job_sender, 'interval', seconds=60)
+        if send_params.send_period == 'Ежедневно':
+            scheduler.add_job(job_sender, 'interval', seconds=60)
+        elif send_params.send_period == 'Еженедельно':
+            scheduler.add_job(job_sender, 'interval', seconds=604800)
+        elif send_params.send_period == 'Ежемесячно':
+            scheduler.add_job(job_sender, 'interval', seconds=2419200)
         scheduler.start()
         return super().form_valid(form)
 

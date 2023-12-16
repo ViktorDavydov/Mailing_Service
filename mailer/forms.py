@@ -7,7 +7,9 @@ class StyleFormMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name:
+            if field_name in ['send_period', 'send_status', 'client_email']:
+                field.widget.attrs['class'] = 'form-select'
+            else:
                 field.widget.attrs['class'] = 'form-control'
 
 
