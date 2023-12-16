@@ -1,8 +1,11 @@
+from apscheduler.schedulers.background import BackgroundScheduler
+from django.conf import settings
+from django.core.mail import send_mail
 from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
-
 from mailer.forms import SendOptionsForm, ClientForm
 from mailer.models import SendOptions, Client
+from mailer.scheduler import job
 
 
 class BaseTemplateView(TemplateView):
@@ -19,6 +22,19 @@ class SendOptionsCreateView(CreateView):
     success_url = reverse_lazy('mailer:mailers_list')
 
     def form_valid(self, form):
+        send_params = form.save()
+
+        def job_sender():
+            send_mail(
+                subject=send_params.mail_title,
+                message=send_params.mail_text,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[send_params.client_email]
+            )
+
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(job_sender, 'interval', seconds=60)
+        scheduler.start()
         return super().form_valid(form)
 
 
