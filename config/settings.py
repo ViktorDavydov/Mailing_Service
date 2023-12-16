@@ -139,8 +139,8 @@ EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 
-EMAIL_HOST_USER = 'cerbin94@yandex.ru'
-EMAIL_HOST_PASSWORD = 'kyuhcvlgttaiglak'
+EMAIL_HOST_USER = 'investstoredjproject@yandex.ru'
+EMAIL_HOST_PASSWORD = 'snfzaqjpmstgmpvl'
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER

@@ -1,7 +1,8 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
 
-from mailer.models import SendOptions
+from mailer.forms import SendOptionsForm, ClientForm
+from mailer.models import SendOptions, Client
 
 
 class BaseTemplateView(TemplateView):
@@ -14,30 +15,40 @@ class SendOptionsListView(ListView):
 
 class SendOptionsCreateView(CreateView):
     model = SendOptions
-    fields = (
-        'send_name',
-        'send_time',
-        'send_period',
-        'send_status',
-    )
+    form_class = SendOptionsForm
     success_url = reverse_lazy('mailer:mailers_list')
 
     def form_valid(self, form):
-        
         return super().form_valid(form)
 
 
 class SendOptionsUpdateView(UpdateView):
     model = SendOptions
-    fields = (
-        'send_name',
-        'send_time',
-        'send_period',
-        'send_status',
-    )
+    form_class = SendOptionsForm
     success_url = reverse_lazy('mailer:mailers_list')
 
 
 class SendOptionsDeleteView(DeleteView):
     model = SendOptions
     success_url = reverse_lazy('mailer:mailers_list')
+
+
+class ClientListView(ListView):
+    model = Client
+
+
+class ClientCreateView(CreateView):
+    model = Client
+    form_class = ClientForm
+    success_url = reverse_lazy('mailer:client_list')
+
+
+class ClientUpdateView(UpdateView):
+    model = Client
+    form_class = ClientForm
+    success_url = reverse_lazy('mailer:client_list')
+
+
+class ClientDeleteView(DeleteView):
+    model = Client
+    success_url = reverse_lazy('mailer:client_list')

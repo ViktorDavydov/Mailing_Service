@@ -8,6 +8,9 @@ class SendOptions(models.Model):
     send_time = models.TimeField(auto_now=False, auto_now_add=False,
                                  verbose_name='время рассылки')
     send_period = models.CharField(max_length=20, verbose_name='периодичность')
+    mail_title = models.CharField(max_length=100, verbose_name='тема',
+                                  default='Сообщение от Invest Store!')
+    mail_text = models.TextField(verbose_name='сообщение', default='Добрый день!')
     send_status = models.CharField(max_length=20, verbose_name='статус рассылки')
 
     def __str__(self):
@@ -33,21 +36,6 @@ class Client(models.Model):
         verbose_name = 'клиент'
         verbose_name_plural = 'клиенты'
         ordering = ('client_name',)
-
-
-class SendText(models.Model):
-    mail_title = models.CharField(max_length=100, verbose_name='тема')
-    mail_text = models.TextField(verbose_name='сообщение')
-    send_options_name = models.ForeignKey(SendOptions, on_delete=models.CASCADE,
-                                          verbose_name='наименование рассылки', null=True)
-
-    def __str__(self):
-        return f"{self.mail_title}"
-
-    class Meta:
-        verbose_name = 'сообщение'
-        verbose_name_plural = 'сообщения'
-        ordering = ('mail_title',)
 
 
 class Logs(models.Model):

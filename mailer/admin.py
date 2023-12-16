@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from mailer.models import Client, SendOptions, SendText
+from mailer.models import Client, SendOptions
 
 
 @admin.register(Client)
@@ -15,10 +15,3 @@ class SendOptionsAdmin(admin.ModelAdmin):
     list_display = ('send_name', 'send_time', 'send_period', 'send_status',)
     list_filter = ('send_status',)
     search_fields = ('send_status',)
-
-
-@admin.register(SendText)
-class SendTextAdmin(admin.ModelAdmin):
-    list_display = ('mail_title', )
-    list_filter = ('mail_title',)
-    search_fields = ('mail_title',)
