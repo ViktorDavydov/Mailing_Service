@@ -14,19 +14,32 @@ send_status_CHOICES = (
 )
 
 
+class Message(models.Model):
+    title = models.CharField(max_length=100, verbose_name='тема письма', unique=True)
+    text = models.TextField(verbose_name='текст письма')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'сообщение'
+        verbose_name_plural = 'сообщения'
+
+
 class SendOptions(models.Model):
-    send_name = models.CharField(max_length=200, verbose_name='наименование рассылки', **NULLABLE)
-    send_time = models.TimeField(auto_now=False, auto_now_add=False,
-                                 verbose_name='время рассылки')
+    send_name = models.CharField(max_length=200, verbose_name='наименование рассылки',
+                                 default=None)
+    send_start = models.DateTimeField(verbose_name='время начала рассылки', default=None)
+    send_finish = models.DateTimeField(verbose_name='время окончания рассылки', default=None)
+    send_next_try = models.DateTimeField(verbose_name='время попытки', **NULLABLE)
     send_period = models.CharField(max_length=20, verbose_name='периодичность',
                                    choices=send_period_CHOICES, default='')
-    mail_title = models.CharField(max_length=100, verbose_name='тема',
-                                  default='Сообщение от Invest Store!')
-    mail_text = models.TextField(verbose_name='сообщение', default='Добрый день!')
+    mail_title = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='тема рассылки',
+                                   default=None)
     send_status = models.CharField(max_length=20, verbose_name='статус рассылки',
                                    choices=send_status_CHOICES, default='')
-    client_email = models.ForeignKey('Client', on_delete=models.CASCADE,
-                                     verbose_name="контактный email", null=True)
+    client_email = models.ForeignKey('Client', verbose_name="контактный email",
+                                     on_delete=models.DO_NOTHING, default=None)
 
     def __str__(self):
         return f"{self.send_name}"
@@ -34,12 +47,12 @@ class SendOptions(models.Model):
     class Meta:
         verbose_name = 'настройка'
         verbose_name_plural = 'настройки'
-        ordering = ('send_time',)
+        ordering = ('send_start',)
 
 
 class Client(models.Model):
-    client_email = models.CharField(max_length=30, verbose_name="контактный email", unique=True)
-    client_name = models.CharField(max_length=50, verbose_name="ФИО")
+    client_email = models.CharField(max_length=150, verbose_name="контактный email", unique=True)
+    client_name = models.CharField(max_length=150, verbose_name="ФИО")
     comment = models.TextField(verbose_name="комментарий", **NULLABLE)
 
     def __str__(self):

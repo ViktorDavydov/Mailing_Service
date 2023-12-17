@@ -1,6 +1,6 @@
 from django import forms
 
-from mailer.models import SendOptions, Client
+from mailer.models import SendOptions, Client, Message
 
 
 class StyleFormMixin:
@@ -16,10 +16,16 @@ class StyleFormMixin:
 class SendOptionsForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = SendOptions
-        fields = '__all__'
+        exclude = ('send_next_try',)
 
 
 class ClientForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Client
+        fields = '__all__'
+
+
+class MessageForm(StyleFormMixin, forms.ModelForm):
+    class Meta:
+        model = Message
         fields = '__all__'
