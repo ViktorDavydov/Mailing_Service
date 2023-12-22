@@ -16,13 +16,13 @@ class StyleFormMixin:
 class SendOptionsForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = SendOptions
-        exclude = ('send_next_try',)
+        exclude = ('send_next_try', 'options_owner', )
 
 
 class ClientForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Client
-        fields = '__all__'
+        exclude = ('client_owner', )
 
 
 class MessageForm(StyleFormMixin, forms.ModelForm):

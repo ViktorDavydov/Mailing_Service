@@ -8,16 +8,20 @@
     <nav class="mt-2 mt-md-0 ms-md-auto">
         <a class="btn btn-light"
            href="{% url 'mailer:home' %}">Главная</a>
-        <a class="btn btn-light"
-           href="{% url 'mailer:mailers_list' %}">Список рассылок</a>
-        <a class="btn btn-light"
-           href="{% url 'mailer:client_list' %}">База клиентов</a>
         {% if not user.is_authenticated %}
+        <a class="btn btn-light"
+           href="{% url 'users:login' %}">Список рассылок</a>
+        <a class="btn btn-light"
+           href="{% url 'users:login' %}">База клиентов</a>
         <a class="btn btn-danger"
            href="{% url 'users:register' %}">Регистрация</a>
         <a class="btn btn-danger"
            href="{% url 'users:login' %}">Войти</a>
         {% else %}
+        <a class="btn btn-light"
+           href="{% url 'mailer:mailers_list' %}">Список рассылок</a>
+        <a class="btn btn-light"
+           href="{% url 'mailer:client_list' %}">База клиентов</a>
         <a class="btn btn-danger"
            href="{% url 'users:profile' %}">Профиль</a>
         <a class="btn btn-danger"

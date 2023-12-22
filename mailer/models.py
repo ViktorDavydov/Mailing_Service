@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 NULLABLE = {'null': True, 'blank': True}
@@ -41,6 +42,9 @@ class SendOptions(models.Model):
     client_email = models.ForeignKey('Client', verbose_name="контактный email",
                                      on_delete=models.DO_NOTHING, default=None)
 
+    options_owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='пользователь',
+                                      on_delete=models.SET_NULL, **NULLABLE)
+
     def __str__(self):
         return f"{self.send_name}"
 
@@ -54,6 +58,8 @@ class Client(models.Model):
     client_email = models.CharField(max_length=150, verbose_name="контактный email", unique=True)
     client_name = models.CharField(max_length=150, verbose_name="ФИО")
     comment = models.TextField(verbose_name="комментарий", **NULLABLE)
+    client_owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='пользователь',
+                                      on_delete=models.SET_NULL, **NULLABLE)
 
     def __str__(self):
         return f"{self.client_email}"

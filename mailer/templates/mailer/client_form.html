@@ -16,7 +16,7 @@
             <div class="card-body">
                 <form method="post" action="" class="form-floating" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {{ form }}
+                    {{ form.as_p }}
                     <br/>
                     {% if object %}
                     <button type="submit"
