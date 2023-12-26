@@ -17,7 +17,7 @@
         <thead>
         <tr>
             <th scope="col">Наименование рассылки</th>
-            <th scope="col">Время рассылки</th>
+            <th scope="col">Время начала рассылки</th>
             <th scope="col">Периодичность</th>
             <th scope="col">Статус</th>
             <th scope="col">Тема рассылки</th>
@@ -27,7 +27,7 @@
         {% for object in object_list %}
         <tr>
             <td>{{ object.send_name }}</td>
-            <td>{{ object.send_time }}</td>
+            <td>{{ object.send_start }}</td>
             <td>{{ object.send_period }}</td>
             <td>{{ object.send_status }}</td>
             <td>{{ object.mail_title }}</td>

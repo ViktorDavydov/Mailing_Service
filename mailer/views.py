@@ -1,18 +1,21 @@
-from apscheduler.schedulers.background import BackgroundScheduler
-from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
+
 from django.urls import reverse_lazy
-from django.utils import timezone
+
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
 from mailer.forms import SendOptionsForm, ClientForm, MessageForm
 from mailer.models import SendOptions, Client, Message
-from mailer.scheduler import job
-from datetime import datetime, timedelta
+from mailer.services import set_mailer
 
 
 class BaseTemplateView(TemplateView):
-    template_name = 'mailer/base.html'
+    template_name = 'mailer/statistics.html'
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['full_list'] = SendOptions.objects.all().count()
+        context_data['active_list'] = SendOptions.objects.filter(send_status='Запущена').count()
+        context_data['unique_clients_list'] = Client.objects.all().count()
+        return context_data
 
 
 class SendOptionsListView(ListView):
@@ -34,33 +37,7 @@ class SendOptionsCreateView(CreateView):
         send_params.options_owner = self.request.user
         send_params.save()
 
-        mail_text = Message.objects.get(title=send_params.mail_title).text
-
-        def job_sender():
-            send_mail(
-                subject=send_params.mail_title,
-                message=mail_text,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[send_params.client_email]
-            )
-
-        now = datetime.now()
-        now = timezone.make_aware(now, timezone.get_current_timezone())
-        scheduler = BackgroundScheduler()
-        if send_params.send_start > now:
-            send_params.send_next_try = send_params.send_start
-            if send_params.send_period == 'Ежедневно':
-                scheduler.add_job(job_sender, 'interval', minutes=1,
-                                  start_date=send_params.send_next_try)
-                scheduler.start()
-            if send_params.send_period == 'Еженедельно':
-                scheduler.add_job(job_sender, 'interval', days=7,
-                                  start_date=send_params.send_next_try)
-                scheduler.start()
-            if send_params.send_period == 'Ежемесячно':
-                scheduler.add_job(job_sender, 'interval', days=30,
-                                  start_date=send_params.send_next_try)
-                scheduler.start()
+        set_mailer(send_params)
 
         return super().form_valid(form)
 
