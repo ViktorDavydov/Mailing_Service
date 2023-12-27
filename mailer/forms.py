@@ -1,4 +1,7 @@
+from datetime import datetime, timedelta
+
 from django import forms
+from django.utils import timezone
 
 from mailer.models import SendOptions, Client, Message
 
@@ -16,16 +19,32 @@ class StyleFormMixin:
 class SendOptionsForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = SendOptions
-        exclude = ('send_next_try', 'options_owner', )
+        exclude = ('send_next_try', 'options_owner', 'send_status',)
+
+    def clean_send_start(self):
+        cleaned_data = self.cleaned_data.get('send_start', )
+        now = datetime.now()
+        now = timezone.make_aware(now, timezone.get_current_timezone())
+        if cleaned_data < now:
+            raise forms.ValidationError('Время начала не может быть меньше текущего')
+        return cleaned_data
+
+    def clean_send_finish(self):
+        cleaned_data = self.cleaned_data.get('send_finish', )
+        now = datetime.now()
+        now = timezone.make_aware(now, timezone.get_current_timezone())
+        if cleaned_data < now + timedelta(days=1):
+            raise forms.ValidationError('Время окончания не может быть меньше текущего + сутки')
+        return cleaned_data
 
 
 class ClientForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Client
-        exclude = ('client_owner', )
+        exclude = ('client_owner',)
 
 
 class MessageForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Message
-        exclude = ('message_owner', )
+        exclude = ('message_owner',)

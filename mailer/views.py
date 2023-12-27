@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django.urls import reverse_lazy
+from django.utils import timezone
 
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
 from mailer.forms import SendOptionsForm, ClientForm, MessageForm
@@ -34,9 +37,14 @@ class SendOptionsCreateView(CreateView):
     def form_valid(self, form):
         send_params = form.save()
         send_params.options_owner = self.request.user
+        now = datetime.now()
+        if send_params.send_start > timezone.make_aware(now, timezone.get_current_timezone()):
+            send_params.send_status = "Активна"
+        else:
+            send_params.send_status = "Завершена"
         send_params.save()
 
-        send_and_log_mailer(send_params)
+        send_and_log_mailer(send_params, self)
 
         return super().form_valid(form)
 
@@ -48,10 +56,10 @@ class SendOptionsUpdateView(UpdateView):
 
     def form_valid(self, form):
         send_params = form.save()
-        send_params.options_owner = self.request.user
+        self.model.send_status = send_params.send_status
         send_params.save()
 
-        send_and_log_mailer(send_params)
+        send_and_log_mailer(send_params, self)
 
         return super().form_valid(form)
     # def get_queryset(self):
@@ -132,3 +140,8 @@ class ClientDeleteView(DeleteView):
 
 class LogsListView(ListView):
     model = Logs
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(logs_owner=self.request.user)
+        return queryset
