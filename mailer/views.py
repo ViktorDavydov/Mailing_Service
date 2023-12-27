@@ -1,10 +1,9 @@
-
 from django.urls import reverse_lazy
 
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
 from mailer.forms import SendOptionsForm, ClientForm, MessageForm
-from mailer.models import SendOptions, Client, Message
-from mailer.services import set_mailer
+from mailer.models import SendOptions, Client, Message, Logs
+from mailer.services import send_and_log_mailer
 
 
 class BaseTemplateView(TemplateView):
@@ -37,7 +36,7 @@ class SendOptionsCreateView(CreateView):
         send_params.options_owner = self.request.user
         send_params.save()
 
-        set_mailer(send_params)
+        send_and_log_mailer(send_params)
 
         return super().form_valid(form)
 
@@ -47,6 +46,14 @@ class SendOptionsUpdateView(UpdateView):
     form_class = SendOptionsForm
     success_url = reverse_lazy('mailer:mailers_list')
 
+    def form_valid(self, form):
+        send_params = form.save()
+        send_params.options_owner = self.request.user
+        send_params.save()
+
+        send_and_log_mailer(send_params)
+
+        return super().form_valid(form)
     # def get_queryset(self):
     #     queryset = super().get_queryset()
     #     queryset = queryset.filter(options_owner=self.request.user)
@@ -59,10 +66,36 @@ class SendOptionsDeleteView(DeleteView):
     success_url = reverse_lazy('mailer:mailers_list')
 
 
+class MessageListView(ListView):
+    model = Message
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(message_owner=self.request.user)
+        return queryset
+
+
 class MessageCreateView(CreateView):
     model = Message
     form_class = MessageForm
-    success_url = reverse_lazy('mailer:mailers_list')
+    success_url = reverse_lazy('mailer:message_list')
+
+    def form_valid(self, form):
+        message_params = form.save()
+        message_params.message_owner = self.request.user
+        message_params.save()
+        return super().form_valid(form)
+
+
+class MessageUpdateView(UpdateView):
+    model = Message
+    form_class = MessageForm
+    success_url = reverse_lazy('mailer:message_list')
+
+
+class MessageDeleteView(DeleteView):
+    model = Message
+    success_url = reverse_lazy('mailer:message_list')
 
 
 class ClientListView(ListView):
@@ -95,3 +128,7 @@ class ClientUpdateView(UpdateView):
 class ClientDeleteView(DeleteView):
     model = Client
     success_url = reverse_lazy('mailer:client_list')
+
+
+class LogsListView(ListView):
+    model = Logs

@@ -18,6 +18,8 @@ send_status_CHOICES = (
 class Message(models.Model):
     title = models.CharField(max_length=100, verbose_name='тема письма', unique=True)
     text = models.TextField(verbose_name='текст письма')
+    message_owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='пользователь',
+                                      on_delete=models.SET_NULL, **NULLABLE)
 
     def __str__(self):
         return self.title
@@ -59,7 +61,7 @@ class Client(models.Model):
     client_name = models.CharField(max_length=150, verbose_name="ФИО")
     comment = models.TextField(verbose_name="комментарий", **NULLABLE)
     client_owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='пользователь',
-                                      on_delete=models.SET_NULL, **NULLABLE)
+                                     on_delete=models.SET_NULL, **NULLABLE)
 
     def __str__(self):
         return f"{self.client_email}"
@@ -73,8 +75,12 @@ class Client(models.Model):
 class Logs(models.Model):
     last_try = models.DateTimeField(auto_now=False, auto_now_add=False,
                                     verbose_name='дата и время последней попытки')
-    status_try = models.BooleanField(verbose_name='статус попытки')
-    server_answer = models.TextField(verbose_name='ответ сервера', **NULLABLE)
+    status_try = models.CharField(max_length=20, verbose_name='статус попытки')
+    server_answer = models.TextField(verbose_name='ответ сервера', **NULLABLE, default='')
+    send_name = models.CharField(max_length=200, verbose_name='наименование рассылки',
+                                 default=None)
+    logs_owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='пользователь',
+                                   on_delete=models.SET_NULL, **NULLABLE)
 
     def __str__(self):
         return f"{self.status_try}: {self.last_try}"
@@ -82,4 +88,4 @@ class Logs(models.Model):
     class Meta:
         verbose_name = 'лог'
         verbose_name_plural = 'логи'
-        ordering = ('last_try',)
+        ordering = ('-last_try',)
