@@ -21,13 +21,13 @@ class SendOptionsForm(StyleFormMixin, forms.ModelForm):
         model = SendOptions
         exclude = ('interval_try', 'options_owner', 'send_status',)
 
-    def clean_send_start(self):
-        cleaned_data = self.cleaned_data.get('send_start', )
-        now = datetime.now()
-        now = timezone.make_aware(now, timezone.get_current_timezone())
-        if cleaned_data < now:
-            raise forms.ValidationError('Время начала не может быть меньше текущего')
-        return cleaned_data
+    # def clean_send_start(self):
+    #     cleaned_data = self.cleaned_data.get('send_start', )
+    #     now = datetime.now()
+    #     now = timezone.make_aware(now, timezone.get_current_timezone())
+    #     if cleaned_data < now:
+    #         raise forms.ValidationError('Время начала не может быть меньше текущего')
+    #     return cleaned_data
 
     def clean_send_finish(self):
         cleaned_data = self.cleaned_data.get('send_finish', )
