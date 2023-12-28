@@ -34,15 +34,14 @@ class SendOptions(models.Model):
                                  default=None)
     send_start = models.DateTimeField(verbose_name='время начала рассылки', default=None)
     send_finish = models.DateTimeField(verbose_name='время окончания рассылки', default=None)
-    send_next_try = models.DateTimeField(verbose_name='время попытки', **NULLABLE)
+    interval_try = models.IntegerField(verbose_name='интервал попытки (дни)', **NULLABLE)
     send_period = models.CharField(max_length=20, verbose_name='периодичность',
                                    choices=send_period_CHOICES, default='')
     mail_title = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='тема рассылки',
                                    default=None)
     send_status = models.CharField(max_length=20, verbose_name='статус рассылки',
-                                   choices=send_status_CHOICES, default='')
-    client_email = models.ForeignKey('Client', verbose_name="контактный email",
-                                     on_delete=models.DO_NOTHING, default=None)
+                                   choices=send_status_CHOICES, default='Создана')
+    client_email = models.ManyToManyField('Client', verbose_name="контактный email")
 
     options_owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='пользователь',
                                       on_delete=models.SET_NULL, **NULLABLE)
@@ -81,6 +80,7 @@ class Logs(models.Model):
                                  default=None)
     logs_owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='пользователь',
                                    on_delete=models.SET_NULL, **NULLABLE)
+    send_email = models.EmailField(max_length=150, verbose_name='почта отправки', **NULLABLE)
 
     def __str__(self):
         return f"{self.status_try}: {self.last_try}"

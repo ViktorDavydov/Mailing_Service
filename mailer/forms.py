@@ -19,7 +19,7 @@ class StyleFormMixin:
 class SendOptionsForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = SendOptions
-        exclude = ('send_next_try', 'options_owner', 'send_status',)
+        exclude = ('interval_try', 'options_owner', 'send_status',)
 
     def clean_send_start(self):
         cleaned_data = self.cleaned_data.get('send_start', )

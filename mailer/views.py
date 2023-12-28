@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
 from mailer.forms import SendOptionsForm, ClientForm, MessageForm
 from mailer.models import SendOptions, Client, Message, Logs
-from mailer.services import send_and_log_mailer
+from mailer.services import send_and_log_mailer, job, set_scheduler
 
 
 class BaseTemplateView(TemplateView):
@@ -37,14 +37,9 @@ class SendOptionsCreateView(CreateView):
     def form_valid(self, form):
         send_params = form.save()
         send_params.options_owner = self.request.user
-        now = datetime.now()
-        if send_params.send_start > timezone.make_aware(now, timezone.get_current_timezone()):
-            send_params.send_status = "Активна"
-        else:
-            send_params.send_status = "Завершена"
         send_params.save()
 
-        send_and_log_mailer(send_params, self)
+        set_scheduler()
 
         return super().form_valid(form)
 
@@ -59,7 +54,7 @@ class SendOptionsUpdateView(UpdateView):
         self.model.send_status = send_params.send_status
         send_params.save()
 
-        send_and_log_mailer(send_params, self)
+        set_scheduler()
 
         return super().form_valid(form)
     # def get_queryset(self):

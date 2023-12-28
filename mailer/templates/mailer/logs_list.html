@@ -6,6 +6,7 @@
         <thead>
         <tr>
             <th scope="col">Наименование рассылки</th>
+            <th scope="col">Кому</th>
             <th scope="col">Последняя попытка</th>
             <th scope="col">Статус</th>
             <th scope="col">Ответ сервера</th>
@@ -15,6 +16,7 @@
         {% for object in object_list %}
         <tr>
             <td>{{ object.send_name }}</td>
+            <td>{{ object.send_email }}</td>
             <td>{{ object.last_try }}</td>
             <td>{{ object.status_try }}</td>
             <td>{{ object.server_answer }}</td>
