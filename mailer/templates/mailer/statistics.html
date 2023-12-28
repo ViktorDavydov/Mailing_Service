@@ -248,10 +248,33 @@
         <div class="col-5 mt-4">
             <div class="u-container-layout u-valign-down u-container-layout-3">
                 <p class="u-custom-font u-heading-font u-text u-text-grey-40 u-text-4">
-                     Уникальных клиентов</p>
+                    Уникальных клиентов</p>
             </div>
         </div>
     </div>
 </section>
+<div class="row mt-5">
+    {% for object in random_articles %}
+    <div class="col-4">
+        <div class="card mb-4 box-shadow text-bg-dark">
+            <div class="card-header">
+                <h5 class="my-0 font-weight-normal">{{ object.article_name }}</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title pricing-card-title">{{ object.contents|truncatechars:50 }}</h6>
+                <ul class="list-unstyled mt-3 mb-4 text-start m-3">
+                    <li>Дата публикации: {{ object.publication_date }}</li>
+                    <li>Просмотры: {{ object.views_count }}</li>
+
+                </ul>
+                <div class="btn-group">
+                    <a href="{% url 'blog:article' object.slug %}" type="button"
+                       class="btn btn-md btn-outline-warning">Перейти</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 </body>
 {% endblock %}

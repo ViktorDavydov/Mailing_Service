@@ -21,8 +21,8 @@ class RegisterView(CreateView):
     def form_valid(self, form):
         user = form.save()
         send_mail(
-            subject='Подтверждение почты в Invest Store.',
-            message=f'Вы зарегистрировались в InvestStore. Введите код в форму подтверждения - {user.verification_code}',
+            subject='Подтверждение почты в Сервисе рассылок.',
+            message=f'Вы зарегистрировались в Сервисе рассылок. Введите код в форму подтверждения - {user.verification_code}',
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[user.email]
         )

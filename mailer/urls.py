@@ -1,10 +1,10 @@
 from django.urls import path
 
 from mailer.apps import MailerConfig
-from mailer.views import SendOptionsListView, BaseTemplateView, SendOptionsCreateView, \
+from mailer.views import SendOptionsListView, SendOptionsCreateView, \
     SendOptionsUpdateView, SendOptionsDeleteView, ClientListView, ClientCreateView, \
     ClientUpdateView, ClientDeleteView, MessageCreateView, LogsListView, MessageListView, \
-    MessageUpdateView, MessageDeleteView
+    MessageUpdateView, MessageDeleteView, BaseTemplateView
 
 app_name = MailerConfig.name
 

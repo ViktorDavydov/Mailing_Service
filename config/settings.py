@@ -146,3 +146,13 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 LOGIN_URL = '/users/'
+
+CASH_ENABLE = os.getenv('CASH_ENABLE')
+
+if CASH_ENABLE:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": os.getenv('CASH_LOCATION'),
+        }
+    }

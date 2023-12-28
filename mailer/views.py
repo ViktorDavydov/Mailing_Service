@@ -1,12 +1,13 @@
-from datetime import datetime
+import random
 
 from django.urls import reverse_lazy
-from django.utils import timezone
 
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
+
+from blog.models import Blog
 from mailer.forms import SendOptionsForm, ClientForm, MessageForm
 from mailer.models import SendOptions, Client, Message, Logs
-from mailer.services import send_and_log_mailer, job, set_scheduler
+from mailer.services import set_scheduler
 
 
 class BaseTemplateView(TemplateView):
@@ -15,8 +16,10 @@ class BaseTemplateView(TemplateView):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         context_data['full_list'] = SendOptions.objects.all().count()
-        context_data['active_list'] = SendOptions.objects.filter(send_status='Запущена').count()
+        context_data['active_list'] = SendOptions.objects.filter(send_status='Активна').count()
         context_data['unique_clients_list'] = Client.objects.all().count()
+        context_data['random_articles'] = random.sample(list(Blog.objects.all()), 3)
+
         return context_data
 
 
@@ -57,11 +60,11 @@ class SendOptionsUpdateView(UpdateView):
         set_scheduler()
 
         return super().form_valid(form)
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     queryset = queryset.filter(options_owner=self.request.user)
-    #     queryset['client_email'] = queryset.filter(client_email=SendOptions.objects.client_email)
-    #     return queryset
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset(*args, **kwargs)
+        queryset = queryset.filter(id=self.kwargs.get('pk'))
+        return queryset
 
 
 class SendOptionsDeleteView(DeleteView):

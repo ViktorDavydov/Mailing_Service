@@ -6,6 +6,6 @@ from blog.views import BlogDetailView
 app_name = BlogConfig.name
 
 urlpatterns = [
-    path('article/<slug>', BlogDetailView.as_view(), name='article'),
+    path('blog/article/<slug>', BlogDetailView.as_view(), name='article'),
 
 ]
