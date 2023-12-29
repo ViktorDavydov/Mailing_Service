@@ -80,5 +80,5 @@ def job():
 def set_scheduler():
     scheduler = BackgroundScheduler()
     chosen_interval = set_period()
-    scheduler.add_job(job, 'interval', minutes=chosen_interval)
+    scheduler.add_job(job, 'interval', days=chosen_interval)
     scheduler.start()

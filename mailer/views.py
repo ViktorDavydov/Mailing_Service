@@ -8,9 +8,10 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
 
 from blog.models import Blog
-from mailer.forms import SendOptionsForm, ClientForm, MessageForm
+from mailer.forms import SendOptionsForm, ClientForm, MessageForm, UsersForm
 from mailer.models import SendOptions, Client, Message, Logs
 from mailer.services import set_scheduler
+from users.models import User
 
 
 class BaseTemplateView(TemplateView):
@@ -41,7 +42,10 @@ class SendOptionsListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(options_owner=self.request.user)
+        if self.request.user.groups.filter(name='manager'):
+            queryset = queryset.all()
+        else:
+            queryset = queryset.filter(options_owner=self.request.user)
         return queryset
 
 
@@ -156,3 +160,15 @@ class LogsListView(LoginRequiredMixin, ListView):
         queryset = super().get_queryset()
         queryset = queryset.filter(logs_owner=self.request.user)
         return queryset
+
+
+class UsersListView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = 'mailer/users_table.html'
+
+
+class UsersUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UsersForm
+    template_name = 'mailer/user_activity_form.html'
+    success_url = reverse_lazy('mailer:users_table')
