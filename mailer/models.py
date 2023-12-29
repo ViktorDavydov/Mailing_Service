@@ -45,6 +45,7 @@ class SendOptions(models.Model):
 
     options_owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='пользователь',
                                       on_delete=models.SET_NULL, **NULLABLE)
+    is_active = models.BooleanField(default=True, verbose_name='активность')
 
     def __str__(self):
         return f"{self.send_name}"

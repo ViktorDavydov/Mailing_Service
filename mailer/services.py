@@ -55,26 +55,27 @@ def set_period():
 def job():
     mailing_list = SendOptions.objects.all()
     for obj in mailing_list:
-        now = datetime.now()
-        now = timezone.make_aware(now, timezone.get_current_timezone())
-        if obj.send_status == 'Создана':
-            if obj.send_start <= now:
-                obj.send_start = now
-                obj.send_status = 'Активна'
-                obj.save()
-        if obj.send_status == 'Активна':
-            if obj.send_finish <= now:
-                obj.send_status = 'Завершена'
-                obj.save()
-            elif obj.send_start <= now:
-                send_and_log_mailer(obj)
-                if obj.send_period == 'Ежедневно':
-                    obj.interval_try = 1
-                elif obj.send_period == 'Еженедельно':
-                    obj.interval_try = 7
-                elif obj.send_period == 'Ежемесячно':
-                    obj.interval_try = 30
-                obj.save()
+        if obj.is_active:
+            now = datetime.now()
+            now = timezone.make_aware(now, timezone.get_current_timezone())
+            if obj.send_status == 'Создана':
+                if obj.send_start <= now:
+                    obj.send_start = now
+                    obj.send_status = 'Активна'
+                    obj.save()
+            if obj.send_status == 'Активна':
+                if obj.send_finish <= now:
+                    obj.send_status = 'Завершена'
+                    obj.save()
+                elif obj.send_start <= now:
+                    send_and_log_mailer(obj)
+                    if obj.send_period == 'Ежедневно':
+                        obj.interval_try = 1
+                    elif obj.send_period == 'Еженедельно':
+                        obj.interval_try = 7
+                    elif obj.send_period == 'Ежемесячно':
+                        obj.interval_try = 30
+                    obj.save()
 
 
 def set_scheduler():

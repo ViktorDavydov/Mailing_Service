@@ -8,7 +8,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
 
 from blog.models import Blog
-from mailer.forms import SendOptionsForm, ClientForm, MessageForm, UsersForm
+from mailer.forms import SendOptionsForm, ClientForm, MessageForm, UsersForm, \
+    SendOptionsManagerForm
 from mailer.models import SendOptions, Client, Message, Logs
 from mailer.services import set_scheduler
 from users.models import User
@@ -82,6 +83,11 @@ class SendOptionsUpdateView(LoginRequiredMixin, UpdateView):
         queryset = super().get_queryset(*args, **kwargs)
         queryset = queryset.filter(id=self.kwargs.get('pk'))
         return queryset
+
+    def get_form_class(self):
+        if self.request.user.groups.filter(name='manager'):
+            return SendOptionsManagerForm
+        return SendOptionsForm
 
 
 class SendOptionsDeleteView(LoginRequiredMixin, DeleteView):
