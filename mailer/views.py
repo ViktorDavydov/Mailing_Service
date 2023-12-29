@@ -1,5 +1,8 @@
 import random
 
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.urls import reverse_lazy
 
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
@@ -18,12 +21,22 @@ class BaseTemplateView(TemplateView):
         context_data['full_list'] = SendOptions.objects.all().count()
         context_data['active_list'] = SendOptions.objects.filter(send_status='Активна').count()
         context_data['unique_clients_list'] = Client.objects.all().count()
-        context_data['random_articles'] = random.sample(list(Blog.objects.all()), 3)
+
+        if settings.CASH_ENABLE:
+            key = f'random_articles'
+            article_list = cache.get(key)
+            if article_list is None:
+                article_list = random.sample(list(Blog.objects.all()), 3)
+                cache.set(key, article_list)
+        else:
+            article_list = random.sample(list(Blog.objects.all()), 3)
+
+        context_data['random_articles'] = article_list
 
         return context_data
 
 
-class SendOptionsListView(ListView):
+class SendOptionsListView(LoginRequiredMixin, ListView):
     model = SendOptions
 
     def get_queryset(self):
@@ -32,7 +45,7 @@ class SendOptionsListView(ListView):
         return queryset
 
 
-class SendOptionsCreateView(CreateView):
+class SendOptionsCreateView(LoginRequiredMixin, CreateView):
     model = SendOptions
     form_class = SendOptionsForm
     success_url = reverse_lazy('mailer:mailers_list')
@@ -47,7 +60,7 @@ class SendOptionsCreateView(CreateView):
         return super().form_valid(form)
 
 
-class SendOptionsUpdateView(UpdateView):
+class SendOptionsUpdateView(LoginRequiredMixin, UpdateView):
     model = SendOptions
     form_class = SendOptionsForm
     success_url = reverse_lazy('mailer:mailers_list')
@@ -67,12 +80,12 @@ class SendOptionsUpdateView(UpdateView):
         return queryset
 
 
-class SendOptionsDeleteView(DeleteView):
+class SendOptionsDeleteView(LoginRequiredMixin, DeleteView):
     model = SendOptions
     success_url = reverse_lazy('mailer:mailers_list')
 
 
-class MessageListView(ListView):
+class MessageListView(LoginRequiredMixin, ListView):
     model = Message
 
     def get_queryset(self):
@@ -81,7 +94,7 @@ class MessageListView(ListView):
         return queryset
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     form_class = MessageForm
     success_url = reverse_lazy('mailer:message_list')
@@ -93,18 +106,18 @@ class MessageCreateView(CreateView):
         return super().form_valid(form)
 
 
-class MessageUpdateView(UpdateView):
+class MessageUpdateView(LoginRequiredMixin, UpdateView):
     model = Message
     form_class = MessageForm
     success_url = reverse_lazy('mailer:message_list')
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(LoginRequiredMixin, DeleteView):
     model = Message
     success_url = reverse_lazy('mailer:message_list')
 
 
-class ClientListView(ListView):
+class ClientListView(LoginRequiredMixin, ListView):
     model = Client
 
     def get_queryset(self):
@@ -113,7 +126,7 @@ class ClientListView(ListView):
         return queryset
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(LoginRequiredMixin, CreateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailer:client_list')
@@ -125,18 +138,18 @@ class ClientCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ClientUpdateView(UpdateView):
+class ClientUpdateView(LoginRequiredMixin, UpdateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailer:client_list')
 
 
-class ClientDeleteView(DeleteView):
+class ClientDeleteView(LoginRequiredMixin, DeleteView):
     model = Client
     success_url = reverse_lazy('mailer:client_list')
 
 
-class LogsListView(ListView):
+class LogsListView(LoginRequiredMixin, ListView):
     model = Logs
 
     def get_queryset(self):
