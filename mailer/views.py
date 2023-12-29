@@ -21,7 +21,7 @@ class BaseTemplateView(TemplateView):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         context_data['full_list'] = SendOptions.objects.all().count()
-        context_data['active_list'] = SendOptions.objects.filter(send_status='Активна').count()
+        context_data['active_list'] = SendOptions.objects.filter(is_active=True).count()
         context_data['unique_clients_list'] = Client.objects.all().count()
 
         if settings.CASH_ENABLE:
