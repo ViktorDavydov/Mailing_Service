@@ -1,0 +1,22 @@
+{% extends 'mailer/base.html' %}
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">{{ object.article_name }}</h1>
+</div>
+<div class="container">
+    <div class="row text-center">
+        <div class="col-12">
+            <div class="card mb-4 box-shadow text-bg-dark">
+                <div class="card-body">
+                    <h6 class="card-title card-title">{{ object.contents }}</h6>
+                    <ul class="list-unstyled mt-3 mb-4 text-start m-3">
+                        <li>Дата создания: {{ object.create_date }}</li>
+                        <li>Дата публикации: {{ object.publication_date }}</li>
+                        <li>Просмотры: {{ object.views_count }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% load static %}
+{% load my_tags %}
+<div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+    <a class="navbar-brand" href="/">
+        <img src="{% static 'brand/mailer_logo.svg' %}" alt="Logo" width="30" height="24"
+             class="d-inline-block align-text-top">
+        {% if not request.user|has_group:"manager" %}
+        Сервис рассылок
+        {% else %}
+        <div class="badge bg-success text-wrap" style="width: 10rem;">
+            Вы менеджер
+        </div>
+        {% endif %}
+    </a>
+    <nav class="mt-2 mt-md-0 ms-md-auto">
+        <a class="btn btn-light"
+           href="{% url 'mailer:home' %}">Главная</a>
+        {% if not user.is_authenticated %}
+        <a class="btn btn-danger"
+           href="{% url 'users:register' %}">Регистрация</a>
+        <a class="btn btn-danger"
+           href="{% url 'users:login' %}">Войти</a>
+        {% else %}
+        {% if request.user|has_group:"manager" %}
+        <a class="btn btn-light"
+           href="{% url 'mailer:mailers_list' %}">Все рассылки</a>
+        <a class="btn btn-light"
+           href="{% url 'mailer:users_table' %}">Все пользователи</a>
+        {% else %}
+        <a class="btn btn-light"
+           href="{% url 'mailer:mailers_list' %}">Мои рассылки</a>
+        <a class="btn btn-light"
+           href="{% url 'mailer:client_list' %}">Мои клиенты</a>
+        <a class="btn btn-light"
+           href="{% url 'mailer:message_list' %}">Мои сообщения</a>
+        {% endif %}
+        <a class="btn btn-danger"
+           href="{% url 'users:profile' %}">Профиль</a>
+        <a class="btn btn-danger"
+           href="{% url 'users:logout' %}">Выйти</a>
+        {% endif %}
+    </nav>
+</div>
+<div class="header mx-auto text-center">
+    <h1 class="display-5 fw-normal text-body-emphasis">Сервис рассылок</h1>
+    <p class="fs-5 text-body-secondary">Создание и управление рассылками</p>
+</div>
