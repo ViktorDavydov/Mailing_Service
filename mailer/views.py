@@ -23,15 +23,15 @@ class BaseTemplateView(TemplateView):
         context_data['full_list'] = SendOptions.objects.all().count()
         context_data['active_list'] = SendOptions.objects.filter(is_active=True).count()
         context_data['unique_clients_list'] = Client.objects.all().count()
-
+        articles_count = Blog.objects.all().count()
         if settings.CASH_ENABLE:
             key = f'random_articles'
             article_list = cache.get(key)
             if article_list is None:
-                article_list = random.sample(list(Blog.objects.all()), 3)
+                article_list = random.sample(list(Blog.objects.all()), articles_count)
                 cache.set(key, article_list)
         else:
-            article_list = random.sample(list(Blog.objects.all()), 3)
+            article_list = random.sample(list(Blog.objects.all()), articles_count)
 
         context_data['random_articles'] = article_list
 
