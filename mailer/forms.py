@@ -22,7 +22,7 @@ class StyleFormMixin:
 class SendOptionsForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = SendOptions
-        exclude = ('interval_try', 'options_owner', 'send_status',)
+        exclude = ('next_try', 'options_owner', 'send_status',)
 
 
 class ClientForm(StyleFormMixin, forms.ModelForm):

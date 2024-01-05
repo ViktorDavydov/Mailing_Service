@@ -34,7 +34,7 @@ class SendOptions(models.Model):
                                  default=None)
     send_start = models.DateTimeField(verbose_name='время начала рассылки', default=None)
     send_finish = models.DateTimeField(verbose_name='время окончания рассылки', default=None)
-    interval_try = models.IntegerField(verbose_name='интервал попытки (дни)', **NULLABLE)
+    next_try = models.DateTimeField(verbose_name='следующая попытка', **NULLABLE)
     send_period = models.CharField(max_length=20, verbose_name='периодичность',
                                    choices=send_period_CHOICES, default='')
     mail_title = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='тема рассылки',

@@ -1,12 +1,11 @@
 import smtplib
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 
 from mailer.models import Logs, SendOptions
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def send_and_log_mailer(obj: SendOptions):
@@ -40,16 +39,16 @@ def send_and_log_mailer(obj: SendOptions):
             )
 
 
-def set_period():
-    interval = SendOptions.objects.all()
-    for obj in interval:
-        if obj.send_period == 'Ежедневно':
-            obj.interval_try = 1
-        elif obj.send_period == 'Еженедельно':
-            obj.interval_try = 7
-        elif obj.send_period == 'Ежемесячно':
-            obj.interval_try = 30
-    return obj.interval_try
+def set_period(source_form):
+    now = datetime.now()
+    now = timezone.make_aware(now, timezone.get_current_timezone())
+    if source_form.send_period == 'Ежедневно':
+        next_try = now + timedelta(minutes=2)
+    elif source_form.send_period == 'Еженедельно':
+        next_try = now + timedelta(minutes=10)
+    elif source_form.send_period == 'Ежемесячно':
+        next_try = now + timedelta(days=30)
+    return next_try
 
 
 def job():
@@ -58,28 +57,22 @@ def job():
         if obj.is_active:
             now = datetime.now()
             now = timezone.make_aware(now, timezone.get_current_timezone())
-            if obj.send_status == 'Создана':
-                if obj.send_start <= now:
-                    obj.send_start = now
-                    obj.send_status = 'Активна'
-                    obj.save()
-            if obj.send_status == 'Активна':
-                if obj.send_finish <= now:
-                    obj.send_status = 'Завершена'
-                    obj.save()
-                elif obj.send_start <= now:
-                    send_and_log_mailer(obj)
-                    if obj.send_period == 'Ежедневно':
-                        obj.interval_try = 1
-                    elif obj.send_period == 'Еженедельно':
-                        obj.interval_try = 7
-                    elif obj.send_period == 'Ежемесячно':
-                        obj.interval_try = 30
-                    obj.save()
-
-
-def set_scheduler():
-    scheduler = BackgroundScheduler()
-    chosen_interval = set_period()
-    scheduler.add_job(job, 'interval', days=chosen_interval)
-    scheduler.start()
+            if obj.next_try - timedelta(seconds=29) < now < obj.next_try + timedelta(seconds=30):
+                if obj.send_status == 'Создана':
+                    if obj.send_start <= now:
+                        obj.send_start = now
+                        obj.send_status = 'Активна'
+                        obj.save()
+                if obj.send_status == 'Активна':
+                    if obj.send_finish <= now:
+                        obj.send_status = 'Завершена'
+                        obj.save()
+                    elif obj.send_start <= now:
+                        send_and_log_mailer(obj)
+                        if obj.send_period == 'Ежедневно':
+                            obj.next_try = now + timedelta(minutes=2)
+                        elif obj.send_period == 'Еженедельно':
+                            obj.next_try = now + timedelta(minutes=10)
+                        elif obj.send_period == 'Ежемесячно':
+                            obj.next_try = now + timedelta(days=30)
+                        obj.save()
