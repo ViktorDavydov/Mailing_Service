@@ -39,25 +39,20 @@ def send_and_log_mailer(obj: SendOptions):
             )
 
 
-def set_period(source_form):
+def set_period():
     now = datetime.now()
     now = timezone.make_aware(now, timezone.get_current_timezone())
-    if source_form.send_period == 'Ежедневно':
-        next_try = now + timedelta(days=1)
-    elif source_form.send_period == 'Еженедельно':
-        next_try = now + timedelta(days=7)
-    elif source_form.send_period == 'Ежемесячно':
-        next_try = now + timedelta(days=30)
+    next_try = now + timedelta(minutes=1)
     return next_try
 
 
 def job():
+    now = datetime.now()
+    now = timezone.make_aware(now, timezone.get_current_timezone())
     mailing_list = SendOptions.objects.all()
     for obj in mailing_list:
         if obj.is_active:
-            now = datetime.now()
-            now = timezone.make_aware(now, timezone.get_current_timezone())
-            if obj.next_try - timedelta(seconds=29) < now < obj.next_try + timedelta(seconds=30):
+            if now - timedelta(minutes=1) < obj.next_try < now + timedelta(minutes=1):
                 if obj.send_status == 'Создана':
                     if obj.send_start <= now:
                         obj.send_start = now
@@ -70,9 +65,11 @@ def job():
                     elif obj.send_start <= now:
                         send_and_log_mailer(obj)
                         if obj.send_period == 'Ежедневно':
-                            obj.next_try = now + timedelta(days=1)
+                            obj.next_try += timedelta(days=1)
+                            obj.save()
                         elif obj.send_period == 'Еженедельно':
-                            obj.next_try = now + timedelta(days=7)
+                            obj.next_try += timedelta(days=7)
+                            obj.save()
                         elif obj.send_period == 'Ежемесячно':
-                            obj.next_try = now + timedelta(days=30)
-                        obj.save()
+                            obj.next_try += timedelta(days=30)
+                            obj.save()

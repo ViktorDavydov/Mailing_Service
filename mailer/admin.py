@@ -12,7 +12,7 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(SendOptions)
 class SendOptionsAdmin(admin.ModelAdmin):
-    list_display = ('send_name', 'send_start', 'send_finish', 'send_period', 'send_status')
+    list_display = ('id', 'send_name', 'send_start', 'send_finish', 'send_period', 'send_status')
     list_filter = ('send_status',)
     search_fields = ('send_status',)
 

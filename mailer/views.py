@@ -1,4 +1,5 @@
 import random
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -59,7 +60,7 @@ class SendOptionsCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         send_params = form.save()
         send_params.options_owner = self.request.user
-        send_params.next_try = set_period(send_params)
+        send_params.next_try = set_period()
         send_params.save()
 
         set_scheduler()
@@ -75,7 +76,7 @@ class SendOptionsUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         send_params = form.save()
         self.model.send_status = send_params.send_status
-        send_params.next_try = set_period(send_params)
+        send_params.next_try = set_period()
         send_params.save()
 
         set_scheduler()
