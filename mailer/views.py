@@ -1,5 +1,4 @@
 import random
-from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,7 +11,6 @@ from blog.models import Blog
 from mailer.forms import SendOptionsForm, ClientForm, MessageForm, UsersForm, \
     SendOptionsManagerForm
 from mailer.models import SendOptions, Client, Message, Logs
-from mailer.scheduler.scheduler import set_scheduler
 from mailer.services import set_period
 from users.models import User
 
@@ -63,8 +61,6 @@ class SendOptionsCreateView(LoginRequiredMixin, CreateView):
         send_params.next_try = set_period()
         send_params.save()
 
-        set_scheduler()
-
         return super().form_valid(form)
 
 
@@ -78,8 +74,6 @@ class SendOptionsUpdateView(LoginRequiredMixin, UpdateView):
         self.model.send_status = send_params.send_status
         send_params.next_try = set_period()
         send_params.save()
-
-        set_scheduler()
 
         return super().form_valid(form)
 
